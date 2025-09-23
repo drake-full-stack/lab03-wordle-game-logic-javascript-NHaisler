@@ -68,19 +68,30 @@ document.addEventListener('DOMContentLoaded', function() {
 // ===== YOUR CHALLENGE: IMPLEMENT THESE FUNCTIONS =====
 
 // TODO: Add keyboard event listener
-// document.addEventListener("keydown", (event) => {
-//     // Your code here!
-// });
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        console.log("A key was pressed:", event.key);
+    }
+});
 
 // TODO: Implement addLetter function
-// function addLetter(letter) {
-//     // Your code here!
-// }
+function addLetter(letter) {
+    const currentRowElement = rows[currentRow];
+    const tiles = currentRowElement.querySelectorAll('.tile');
+    tiles[currentTile].textContent += letter;
+    currentTile++;
+    logDebug(getCurrentWord());
+    
 
-// TODO: Implement deleteLetter function  
-// function deleteLetter() {
-//     // Your code here!
-// }
+
+}
+
+document.addEventListener("keydown", (event) => {
+    if (/^[a-z]$/i.test(event.key)) {
+        addLetter(event.key)
+    }
+});
+
 
 // TODO: Implement submitGuess function
 // function submitGuess() {
