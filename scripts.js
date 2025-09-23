@@ -92,6 +92,26 @@ document.addEventListener("keydown", (event) => {
     }
 });
 
+// TODO: Implement deleteLetter function  
+function deleteLetter() {
+    const currentRowElement = rows[currentRow];
+    const tiles = currentRowElement.querySelectorAll('.tile');
+    if (currentTile > 0) {
+        const letterToDelete = tiles[currentTile - 1].textContent.slice(-1)
+        tiles[currentTile - 1].textContent = tiles[currentTile - 1].textContent.substring(0, tiles[currentTile - 1].textContent.length - 1);
+        currentTile--;
+        logDebug(`Removed ${letterToDelete}`);
+    }
+    else{
+        logDebug("No letters, ERROR")
+    }
+}
+
+document.addEventListener("keydown", (event) => {
+    if (event.key === "Backspace") {
+        deleteLetter();
+    }
+});
 
 // TODO: Implement submitGuess function
 // function submitGuess() {
