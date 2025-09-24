@@ -69,54 +69,97 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // TODO: Add keyboard event listener
 document.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-        console.log("A key was pressed:", event.key);
-    }
+    
+   console.log("A key was pressed:", event.key);
+
 });
 
 // TODO: Implement addLetter function
 function addLetter(letter) {
+    if (gameOver || currentTile >= 5) return;
+    letter = letter.toUpperCase();
+
     const currentRowElement = rows[currentRow];
     const tiles = currentRowElement.querySelectorAll('.tile');
-    tiles[currentTile].textContent += letter;
+
+    tiles[currentTile].textContent = letter; // was "+="
+    tiles[currentTile].classList.add('filled');
     currentTile++;
     logDebug(getCurrentWord());
-    
 
 
 }
-
-document.addEventListener("keydown", (event) => {
-    if (/^[a-z]$/i.test(event.key)) {
-        addLetter(event.key)
-    }
-});
 
 // TODO: Implement deleteLetter function  
 function deleteLetter() {
+    if (gameOver) return;
+
     const currentRowElement = rows[currentRow];
     const tiles = currentRowElement.querySelectorAll('.tile');
     if (currentTile > 0) {
-        const letterToDelete = tiles[currentTile - 1].textContent.slice(-1)
-        tiles[currentTile - 1].textContent = tiles[currentTile - 1].textContent.substring(0, tiles[currentTile - 1].textContent.length - 1);
-        currentTile--;
+        currentTile--; // move cursor back first
+        const tile = tiles[currentTile];
+        const letterToDelete = tile.textContent;
+        tile.textContent = '';
+        tile.classList.remove('filled'); // was classList.add('')
         logDebug(`Removed ${letterToDelete}`);
-    }
-    else{
-        logDebug("No letters, ERROR")
+    } else {
+        alert("No letters, ERROR");
     }
 }
 
+
+// TODO: Implement submitGuess function
+function submitGuess() {
+    if (gameOver) return;
+
+    if (currentTile !== 5) {
+        alert("Please enter 5 letters!");
+        return;
+    }
+
+    const guess = getCurrentWord();
+
+    if (guess === TARGET_WORD) {
+        gameOver = true;
+        setTimeout(() => alert("Congratulations! You won!"), 500);
+    } else if (currentRow === rows.length - 1) {
+        gameOver = true;
+    } else {
+        logDebug(currentRow);
+        currentRow++;
+        logDebug(currentRow);
+        currentTile = 0;
+    }
+
+    logDebug(guess);
+    return;
+    return;
+}
+
+
+
+
+
 document.addEventListener("keydown", (event) => {
+    // TODO: Add your code here
+    // Hint: Check if game is over first
+    // Hint: Convert event.key to uppercase
+    // Hint: Handle three cases: BACKSPACE, ENTER, and letters A-Z
+    // Hint: Call the appropriate function for each case
+
+    if (/^[a-z]$/i.test(event.key)) {
+        addLetter(event.key)
+    }
+
     if (event.key === "Backspace") {
         deleteLetter();
     }
+    if (event.key === "Enter") {
+        submitGuess();
+    }
 });
 
-// TODO: Implement submitGuess function
-// function submitGuess() {
-//     // Your code here!
-// }
 
 // TODO: Implement checkGuess function (the hardest part!)
 // function checkGuess(guess, tiles) {
