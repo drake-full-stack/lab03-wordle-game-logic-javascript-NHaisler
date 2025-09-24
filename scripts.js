@@ -67,17 +67,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ===== YOUR CHALLENGE: IMPLEMENT THESE FUNCTIONS =====
 
-// TODO: Add keyboard event listener
-document.addEventListener("keydown", (event) => {
-    
-   console.log("A key was pressed:", event.key);
 
+document.addEventListener("keydown", (event) => {
+    // TODO: Add your code here
+    // Hint: Check if game is over first
+    // Hint: Convert event.key to uppercase
+    // Hint: Handle three cases: BACKSPACE, ENTER, and letters A-Z
+    // Hint: Call the appropriate function for each case
+    if (gameOver) return;
+
+
+    if (/^[a-z]$/i.test(event.key)) {
+        addLetter(event.key.toUpperCase())
+        return;
+    }
+
+    if (event.key === "Backspace") {
+        deleteLetter();
+        return;
+    }
+    if (event.key === "Enter") {
+        submitGuess();
+        return;
+    }
 });
+
 
 // TODO: Implement addLetter function
 function addLetter(letter) {
     if (gameOver || currentTile >= 5) return;
-    letter = letter.toUpperCase();
+    
 
     const currentRowElement = rows[currentRow];
     const tiles = currentRowElement.querySelectorAll('.tile');
@@ -119,6 +138,8 @@ function submitGuess() {
     }
 
     const guess = getCurrentWord();
+    const tiles = rows[currentRow].querySelectorAll('.tile');
+    const result = checkGuess(guess, tiles);
 
     if (guess === TARGET_WORD) {
         gameOver = true;
@@ -134,36 +155,42 @@ function submitGuess() {
 
     logDebug(guess);
     return;
-    return;
 }
 
-
-
-
-
-document.addEventListener("keydown", (event) => {
-    // TODO: Add your code here
-    // Hint: Check if game is over first
-    // Hint: Convert event.key to uppercase
-    // Hint: Handle three cases: BACKSPACE, ENTER, and letters A-Z
-    // Hint: Call the appropriate function for each case
-
-    if (/^[a-z]$/i.test(event.key)) {
-        addLetter(event.key)
+function checkGuess(guess, tiles) {
+    logDebug(`🔍 Starting analysis for "${guess}"`, 'info');
+    
+    // TODO: Split TARGET_WORD and guess into arrays
+    const target = TARGET_WORD.split('');
+    const guessArray = guess.split('');
+    const result = ['absent', 'absent', 'absent', 'absent', 'absent'];
+    
+    // STEP 1: Find exact matches
+    for (let i = 0; i < 5; i++) {
+        if (target[i] === guessArray[i]) {
+            result[i] = 'correct';
+            // TODO: mark both target[i] and guessArray[i] as used (null)
+            target[i]     = null
+            guessArray[i] = null
+        }
     }
-
-    if (event.key === "Backspace") {
-        deleteLetter();
+    
+    // STEP 2: Find wrong position matches  
+    for (let i = 0; i < 5; i++) {
+        if (guessArray[i] !== null) { // only check unused letters
+            for (let j = 0; j < 5; j++) {
+                if (target[j] === guessArray[i]) {
+                    result[i] = 'present';
+                    target[j] = null;      // mark target letter as used
+                    guessArray[i] = null;  // mark guess letter as used
+                    break;                 // stop after first match
+                }
+            }
+        }
+    }   
+    
+    for (let i = 0; i < 5; i++) {
+        tiles[i].classList.add(result[i]);
     }
-    if (event.key === "Enter") {
-        submitGuess();
-    }
-});
-
-
-// TODO: Implement checkGuess function (the hardest part!)
-// function checkGuess(guess, tiles) {
-//     // Your code here!
-//     // Remember: handle duplicate letters correctly
-//     // Return the result array
-// }
+    return result;
+}
